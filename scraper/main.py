@@ -15,16 +15,26 @@ def get_all_chapter_urls(start_url):
         res = requests.get(urls[-1], headers=HEADERS)
         soup = BeautifulSoup(res.text, "html.parser")
 
-        next_button = soup.select_one("a.next-part__button")
-        if not next_button:
-            print("[INFO] Nenhum próximo capítulo encontrado.")
+        nav_div = soup.find("div", id="story-part-navigation")
+        if not nav_div:
+            print("[INFO] Div de navegação não encontrada.")
             break
 
-        next_url = "https://www.wattpad.com" + next_button.get("href")
+        next_link = nav_div.find("a")
+        if not next_link or not next_link.get("href"):
+            print("[INFO] Nenhum link de próximo capítulo encontrado.")
+            break
+
+        next_url = next_link["href"]
+        if not next_url.startswith("http"):
+            next_url = "https://www.wattpad.com" + next_url
+
         if next_url in urls:
             break
+
         urls.append(next_url)
-        time.sleep(1)  # evita ser bloqueado
+        time.sleep(1)
+
     return urls
 
 def scrape_chapter(url):
