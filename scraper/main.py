@@ -42,9 +42,22 @@ def scrape_chapter(url):
     res = requests.get(url, headers=HEADERS)
     soup = BeautifulSoup(res.text, "html.parser")
 
-    title = soup.select_one("h2").text.strip() if soup.select_one("h2") else "Sem título"
+    title = soup.select_one("h2").text.strip() if soup.select_one("h2") else "Sem título do livro"
+    
+    h2_tags = soup.find_all(class_="h2")
+
+    # for i, tag in enumerate(h2_tags):
+    #     print(f"[DEBUG] h2[{i}]: {tag.text.strip()}")
+
+    if len(h2_tags) >= 2:
+        chapter = h2_tags[1].text.strip()
+    elif h2_tags:
+        chapter = h2_tags[0].text.strip()
+    else:
+        chapter = "Sem título do capítulo"
+
     content = "\n".join(p.text.strip() for p in soup.select("pre"))
-    return {"url": url, "title": title, "text": content}
+    return {"url": url, "title": title, "chapter": chapter, "text": content}
 
 def main():
     start_url = os.environ.get("START_URL")
