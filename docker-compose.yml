@@ -3,17 +3,19 @@ version: "3.9"
 services:
   scraper:
     build: ./scraper
-    environment:
-      - START_URL=https://www.wattpad.com/1496499481-fronteira-23-pref%C3%A1cio
+    env_file:
+      - .env
     volumes:
       - ./shared:/app/shared
 
-#   summarizer:
-#     build: ./summarizer
-#     depends_on:
-#       - scraper
-#     volumes:
-#       - ./shared:/app/shared
+  summarizer:
+    build: ./summarizer
+    depends_on:
+      - scraper
+    env_file:
+      - .env
+    volumes:
+      - ./shared:/app/shared
 
 #   backend:
 #     build: ./backend
